@@ -1,0 +1,18 @@
+CCflags = -c -depend !Depend -IC:,@.TCPIPLibs.include -throwback -pcc -Otime -DRISCOS
+Linkflags = -aif -c++ -o $@
+
+Libs = @.TCPIPLibs.libs.o.unixlib @.TCPIPLibs.libs.o.socklib @.TCPIPLibs.libs.o.inetlib C:o.stubs
+Objects = @.o.ttcp @.o.getopt
+
+all: @.ttcp
+
+clean:
+	-Wipe @.o.* ~c
+        -Wipe @.ttcp ~c
+
+@.ttcp:  $(Objects) $(Libs)
+        Link $(Linkflags) $(Objects) $(Libs)
+
+.SUFFIXES: .o .c
+.c.o:
+	cc $(CCflags) -o $@ @.c.$*
