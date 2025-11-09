@@ -15,9 +15,6 @@ Changes made in support of RISC OS:
 
 - Bring our own `getopt()` implementation (from musl libc) and `getrusage()`
   (barely functional hack) since RISC OS doesn't provide such niceties.
-- Use a `select()` loop to avoid doing blocking I/O - RISC OS is cooperatively
-  multitasked, and even in a TaskWindow, blocking socket I/O seems to send it
-  off into the weeds.
 - Make an effort to close sockets, since they don't get closed for us at exit
   and end up hanging around and being a nuisance.
 - Various fixes to get rid of compiler warnings (printf format specifiers, etc).

@@ -177,28 +177,6 @@ void sigint(ignored)
 	exit(1);
 }
 
-int wait_select(fd)
-{
-	int rc;
-	struct timeval to;
-	fd_set ready;
-
-again:
-	FD_ZERO(&ready);
-	FD_SET(fd, &ready);
-	to.tv_sec = 0;
-	to.tv_usec = 20000; /* 1/50 s */
-	rc = select(fd + 1, &ready, 0, 0, &to);
-	if (rc < 0)
-		return rc;
-
-	if (!FD_ISSET(fd, &ready))
-	{
-		goto again;
-	}
-	return 0;
-}
-
 main(argc, argv) int argc;
 char **argv;
 {
@@ -437,8 +415,6 @@ char **argv;
 
 			fromlen = sizeof(frominet);
 			domain = AF_INET;
-			if (wait_select(fd) < 0)
-				err("select");
 			rc = accept(fd, &frominet, &fromlen);
 			if (rc < 0)
 				err("accept");
@@ -906,7 +882,6 @@ int count;
 	register int cnt;
 	if (udp)
 	{
-		wait_select(fd);
 		cnt = recvfrom(fd, buf, count, 0, &from, &len);
 		numCalls++;
 	}
@@ -916,7 +891,6 @@ int count;
 			cnt = mread(fd, buf, count); /* fill buf */
 		else
 		{
-			wait_select(fd);
 			cnt = read(fd, buf, count);
 			numCalls++;
 		}
@@ -987,7 +961,6 @@ unsigned n;
 
 	do
 	{
-		wait_select(fd);
 		nread = read(fd, bufp, n - count);
 		numCalls++;
 		if (nread < 0)
